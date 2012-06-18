@@ -84,7 +84,31 @@
         view.render();
         return view.$('.sub-view').length.should.eql(2);
       });
-      it("searches through nested sub-view names");
+      it("throws an error if sub-view doesn't exists", function() {
+        var NotExistingView;
+        NotExistingView = (function(_super) {
+
+          __extends(NotExistingView, _super);
+
+          NotExistingView.name = 'NotExistingView';
+
+          function NotExistingView() {
+            return NotExistingView.__super__.constructor.apply(this, arguments);
+          }
+
+          NotExistingView.prototype.template = Handlebars.compile('{{view InvalidView}}', {
+            data: true
+          });
+
+          return NotExistingView;
+
+        })(TestView);
+        return (function() {
+          var view;
+          view = new NotExistingView;
+          return view.render();
+        }).should["throw"]('Invalid view name - InvalidView');
+      });
       it("can pass options to the sub-view");
       return it("can pass a new template for the view");
     });
