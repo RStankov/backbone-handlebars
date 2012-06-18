@@ -1,6 +1,15 @@
 class window.SubView extends Backbone.View
   className: 'sub-view'
 
+window.app =
+  views:
+    SubView: Backbone.View.extend
+      className: 'sub-view'
+
+      render: ->
+        @$el.html 'sub-view text'
+
+
 describe "Backbone.Handlebars", ->
   describe "view helper", ->
     class TestView extends Backbone.View
@@ -31,12 +40,20 @@ describe "Backbone.Handlebars", ->
 
     it "throws an error if sub-view doesn't exists", ->
       class NotExistingView extends TestView
-        template: Handlebars.compile('{{view InvalidView}}', data: true)
+        template: Handlebars.compile('{{view "InvalidView"}}', data: true)
 
       (->
         view = new NotExistingView
         view.render()
       ).should.throw 'Invalid view name - InvalidView'
+
+    it "searches through nested sub-view names", ->
+      class NestedTestView extends TestView
+        template: Handlebars.compile('{{view "app.views.SubView"}}', data: true)
+
+      view = new NestedTestView
+      view.render()
+      view.$('.sub-view').html().should.eql 'sub-view text'
 
     it "can pass options to the sub-view"
     it "can pass a new template for the view"

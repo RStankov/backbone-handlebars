@@ -9,8 +9,8 @@ Handlebars.registerHelper 'view', (name, options) ->
   new Handlebars.SafeString '<div id="_' + view.cid + '"></div>'
 
 findViewClass = (name) ->
-  viewClass = window[name]
-  throw "Invalid view name - #{name}" unless viewClass?
+  viewClass = _.inject (name || '').split('.'), ((memo, fragment) -> memo[fragment] || false), window
+  throw "Invalid view name - #{name}" unless viewClass
   viewClass
 
 Backbone.View::renderTemplate = (context = {}) ->

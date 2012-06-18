@@ -19,6 +19,17 @@
 
   })(Backbone.View);
 
+  window.app = {
+    views: {
+      SubView: Backbone.View.extend({
+        className: 'sub-view',
+        render: function() {
+          return this.$el.html('sub-view text');
+        }
+      })
+    }
+  };
+
   describe("Backbone.Handlebars", function() {
     return describe("view helper", function() {
       var TestView;
@@ -96,7 +107,7 @@
             return NotExistingView.__super__.constructor.apply(this, arguments);
           }
 
-          NotExistingView.prototype.template = Handlebars.compile('{{view InvalidView}}', {
+          NotExistingView.prototype.template = Handlebars.compile('{{view "InvalidView"}}', {
             data: true
           });
 
@@ -108,6 +119,29 @@
           view = new NotExistingView;
           return view.render();
         }).should["throw"]('Invalid view name - InvalidView');
+      });
+      it("searches through nested sub-view names", function() {
+        var NestedTestView, view;
+        NestedTestView = (function(_super) {
+
+          __extends(NestedTestView, _super);
+
+          NestedTestView.name = 'NestedTestView';
+
+          function NestedTestView() {
+            return NestedTestView.__super__.constructor.apply(this, arguments);
+          }
+
+          NestedTestView.prototype.template = Handlebars.compile('{{view "app.views.SubView"}}', {
+            data: true
+          });
+
+          return NestedTestView;
+
+        })(TestView);
+        view = new NestedTestView;
+        view.render();
+        return view.$('.sub-view').html().should.eql('sub-view text');
       });
       it("can pass options to the sub-view");
       return it("can pass a new template for the view");
