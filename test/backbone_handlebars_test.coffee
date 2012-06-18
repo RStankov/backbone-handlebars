@@ -3,6 +3,9 @@ class window.SubView extends Backbone.View
   events:
     click: -> @$el.html 'clicked'
 
+class window.SubViewWithModel extends Backbone.View
+  render: -> @$el.html @model
+
 window.app =
   views:
     SubView: Backbone.View.extend
@@ -38,6 +41,12 @@ describe "Backbone.Handlebars", ->
       view = renderView '{{view "app.views.SubView"}}'
       view.$el.html().should.eql '<div>sub-view</div>'
 
-    it "can pass options to the sub-view"
+    it "can pass options to the sub-view", ->
+      view = renderView '{{view "SubViewWithModel" model=1 tagName="span" className="sview"}}'
+      console.log view.el
+      subView = view.$('.sview')
+      subView.html().should.eql '1'
+      subView.prop('tagName').toLowerCase().should.eql 'span'
+
     it "can pass a new template for the view"
 

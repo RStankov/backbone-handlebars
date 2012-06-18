@@ -25,6 +25,24 @@
 
   })(Backbone.View);
 
+  window.SubViewWithModel = (function(_super) {
+
+    __extends(SubViewWithModel, _super);
+
+    SubViewWithModel.name = 'SubViewWithModel';
+
+    function SubViewWithModel() {
+      return SubViewWithModel.__super__.constructor.apply(this, arguments);
+    }
+
+    SubViewWithModel.prototype.render = function() {
+      return this.$el.html(this.model);
+    };
+
+    return SubViewWithModel;
+
+  })(Backbone.View);
+
   window.app = {
     views: {
       SubView: Backbone.View.extend({
@@ -77,7 +95,14 @@
         view = renderView('{{view "app.views.SubView"}}');
         return view.$el.html().should.eql('<div>sub-view</div>');
       });
-      it("can pass options to the sub-view");
+      it("can pass options to the sub-view", function() {
+        var subView, view;
+        view = renderView('{{view "SubViewWithModel" model=1 tagName="span" className="sview"}}');
+        console.log(view.el);
+        subView = view.$('.sview');
+        subView.html().should.eql('1');
+        return subView.prop('tagName').toLowerCase().should.eql('span');
+      });
       return it("can pass a new template for the view");
     });
   });

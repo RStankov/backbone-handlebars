@@ -1,6 +1,6 @@
 Handlebars.registerHelper 'view', (name, options) ->
   viewClass = findViewClass(name)
-  view = new viewClass
+  view = new viewClass options.hash
 
   parentView = options.data.view
   parentView._toRender ?= []
