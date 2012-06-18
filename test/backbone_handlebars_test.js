@@ -15,6 +15,12 @@
 
     SubView.prototype.className = 'sub-view';
 
+    SubView.prototype.events = {
+      click: function() {
+        return this.$el.html('clicked');
+      }
+    };
+
     return SubView;
 
   })(Backbone.View);
@@ -22,9 +28,8 @@
   window.app = {
     views: {
       SubView: Backbone.View.extend({
-        className: 'sub-view',
         render: function() {
-          return this.$el.html('sub-view text');
+          return this.$el.html('sub-view');
         }
       })
     }
@@ -32,116 +37,45 @@
 
   describe("Backbone.Handlebars", function() {
     return describe("view helper", function() {
-      var TestView;
-      TestView = (function(_super) {
-
-        __extends(TestView, _super);
-
-        TestView.name = 'TestView';
-
-        function TestView() {
-          return TestView.__super__.constructor.apply(this, arguments);
-        }
-
-        TestView.prototype.template = Handlebars.compile('{{view "SubView"}}', {
-          data: true
+      var renderView;
+      renderView = function(template) {
+        var customViewClass;
+        customViewClass = Backbone.View.extend({
+          template: Handlebars.compile(template, {
+            data: true
+          }),
+          initialize: function() {
+            return this.renderTemplate();
+          }
         });
-
-        TestView.prototype.render = function() {
-          return this.renderTemplate();
-        };
-
-        return TestView;
-
-      })(Backbone.View);
+        return new customViewClass;
+      };
       it("adds the sub-view element", function() {
         var view;
-        view = new TestView;
-        view.render();
+        view = renderView('{{view "SubView"}}');
         return view.$('.sub-view').should.not.be["null"];
       });
       it("keeps the events of the sub-view", function() {
         var view;
-        window.SubView.prototype.events = {
-          click: function() {
-            return this.$el.html('clicked');
-          }
-        };
-        view = new TestView;
-        view.render();
+        view = renderView('{{view "SubView"}}');
         view.$('.sub-view').click();
         return view.$('.sub-view').html().should.eql('clicked');
       });
       it("can render several sub-views", function() {
-        var DoubleTestView, view;
-        DoubleTestView = (function(_super) {
-
-          __extends(DoubleTestView, _super);
-
-          DoubleTestView.name = 'DoubleTestView';
-
-          function DoubleTestView() {
-            return DoubleTestView.__super__.constructor.apply(this, arguments);
-          }
-
-          DoubleTestView.prototype.template = Handlebars.compile('{{view "SubView"}}{{view "SubView"}}', {
-            data: true
-          });
-
-          return DoubleTestView;
-
-        })(TestView);
-        view = new DoubleTestView;
+        var view;
+        view = renderView('{{view "SubView"}}{{view "SubView"}}');
         view.render();
         return view.$('.sub-view').length.should.eql(2);
       });
       it("throws an error if sub-view doesn't exists", function() {
-        var NotExistingView;
-        NotExistingView = (function(_super) {
-
-          __extends(NotExistingView, _super);
-
-          NotExistingView.name = 'NotExistingView';
-
-          function NotExistingView() {
-            return NotExistingView.__super__.constructor.apply(this, arguments);
-          }
-
-          NotExistingView.prototype.template = Handlebars.compile('{{view "InvalidView"}}', {
-            data: true
-          });
-
-          return NotExistingView;
-
-        })(TestView);
         return (function() {
-          var view;
-          view = new NotExistingView;
-          return view.render();
+          return renderView('{{view "InvalidView"}}');
         }).should["throw"]('Invalid view name - InvalidView');
       });
       it("searches through nested sub-view names", function() {
-        var NestedTestView, view;
-        NestedTestView = (function(_super) {
-
-          __extends(NestedTestView, _super);
-
-          NestedTestView.name = 'NestedTestView';
-
-          function NestedTestView() {
-            return NestedTestView.__super__.constructor.apply(this, arguments);
-          }
-
-          NestedTestView.prototype.template = Handlebars.compile('{{view "app.views.SubView"}}', {
-            data: true
-          });
-
-          return NestedTestView;
-
-        })(TestView);
-        view = new NestedTestView;
-        view.render();
-        return view.$('.sub-view').html().should.eql('sub-view text');
+        var view;
+        view = renderView('{{view "app.views.SubView"}}');
+        return view.$el.html().should.eql('<div>sub-view</div>');
       });
       it("can pass options to the sub-view");
       return it("can pass a new template for the view");
