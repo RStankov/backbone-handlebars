@@ -13,7 +13,7 @@
       return SubView.__super__.constructor.apply(this, arguments);
     }
 
-    SubView.prototype.className = '.sub-view';
+    SubView.prototype.className = 'sub-view';
 
     return SubView;
 
@@ -21,30 +21,45 @@
 
   describe("Backbone.Handlebars", function() {
     return describe("view helper", function() {
-      return it("adds the sub-view element", function() {
-        var TestView, view;
-        TestView = (function(_super) {
+      var TestView;
+      TestView = (function(_super) {
 
-          __extends(TestView, _super);
+        __extends(TestView, _super);
 
-          TestView.name = 'TestView';
+        TestView.name = 'TestView';
 
-          function TestView() {
-            return TestView.__super__.constructor.apply(this, arguments);
-          }
+        function TestView() {
+          return TestView.__super__.constructor.apply(this, arguments);
+        }
 
-          TestView.prototype.template = Handlebars.compile('{{view "SubView"}}');
+        TestView.prototype.template = Handlebars.compile('{{view "SubView"}}', {
+          data: true
+        });
 
-          TestView.prototype.render = function() {
-            return this.$el.html(this.template());
-          };
+        TestView.prototype.render = function() {
+          return this.renderTemplate();
+        };
 
-          return TestView;
+        return TestView;
 
-        })(Backbone.View);
+      })(Backbone.View);
+      it("adds the sub-view element", function() {
+        var view;
         view = new TestView;
         view.render();
         return view.$('.sub-view').should.not.be["null"];
+      });
+      return it("keeps the events of the sub-view", function() {
+        var view;
+        window.SubView.prototype.events = {
+          click: function() {
+            return this.$el.html('clicked');
+          }
+        };
+        view = new TestView;
+        view.render();
+        view.$('.sub-view').click();
+        return view.$('.sub-view').html().should.eql('clicked');
       });
     });
   });
