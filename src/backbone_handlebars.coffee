@@ -3,13 +3,14 @@ Handlebars.registerHelper 'view', (name, options) ->
   view = new viewClass
 
   parentView = options.data.view
-  parentView._toRender = view
+  parentView._toRender ?= []
+  parentView._toRender.push view
 
-  new Handlebars.SafeString '<div id="view-' + view.cid + '"></div>'
+  new Handlebars.SafeString '<div id="_' + view.cid + '"></div>'
 
 
 Backbone.View::renderTemplate = (context = {}) ->
   @$el.html @template context, data: {view: this}
-  view = @_toRender
-  view.render()
-  @$("#view-#{view.cid}").replaceWith view.el
+  _.each @_toRender, (view) =>
+    view.render()
+    @$("#_#{view.cid}").replaceWith view.el

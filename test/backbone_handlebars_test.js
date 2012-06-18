@@ -49,7 +49,7 @@
         view.render();
         return view.$('.sub-view').should.not.be["null"];
       });
-      return it("keeps the events of the sub-view", function() {
+      it("keeps the events of the sub-view", function() {
         var view;
         window.SubView.prototype.events = {
           click: function() {
@@ -60,6 +60,29 @@
         view.render();
         view.$('.sub-view').click();
         return view.$('.sub-view').html().should.eql('clicked');
+      });
+      return it("can render several sub-view elements", function() {
+        var DoubleTestView, view;
+        DoubleTestView = (function(_super) {
+
+          __extends(DoubleTestView, _super);
+
+          DoubleTestView.name = 'DoubleTestView';
+
+          function DoubleTestView() {
+            return DoubleTestView.__super__.constructor.apply(this, arguments);
+          }
+
+          DoubleTestView.prototype.template = Handlebars.compile('{{view "SubView"}}{{view "SubView"}}', {
+            data: true
+          });
+
+          return DoubleTestView;
+
+        })(TestView);
+        view = new DoubleTestView;
+        view.render();
+        return view.$('.sub-view').length.should.eql(2);
       });
     });
   });

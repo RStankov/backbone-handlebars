@@ -21,4 +21,12 @@ describe "Backbone.Handlebars", ->
       view.$('.sub-view').click()
       view.$('.sub-view').html().should.eql 'clicked'
 
+    it "can render several sub-view elements", ->
+      class DoubleTestView extends TestView
+        template: Handlebars.compile('{{view "SubView"}}{{view "SubView"}}', data: true)
+
+      view = new DoubleTestView
+      view.render()
+      view.$('.sub-view').length.should.eql 2
+
 
