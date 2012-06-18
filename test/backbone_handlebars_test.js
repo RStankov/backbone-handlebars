@@ -98,7 +98,6 @@
       it("can pass options to the sub-view", function() {
         var subView, view;
         view = renderView('{{view "SubViewWithModel" model=1 tagName="span" className="sview"}}');
-        console.log(view.el);
         subView = view.$('.sview');
         subView.html().should.eql('1');
         return subView.prop('tagName').toLowerCase().should.eql('span');

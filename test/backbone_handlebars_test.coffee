@@ -43,7 +43,7 @@ describe "Backbone.Handlebars", ->
 
     it "can pass options to the sub-view", ->
       view = renderView '{{view "SubViewWithModel" model=1 tagName="span" className="sview"}}'
-      console.log view.el
+
       subView = view.$('.sview')
       subView.html().should.eql '1'
       subView.prop('tagName').toLowerCase().should.eql 'span'
