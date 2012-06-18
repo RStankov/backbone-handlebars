@@ -61,7 +61,7 @@
         view.$('.sub-view').click();
         return view.$('.sub-view').html().should.eql('clicked');
       });
-      return it("can render several sub-view elements", function() {
+      it("can render several sub-views", function() {
         var DoubleTestView, view;
         DoubleTestView = (function(_super) {
 
@@ -84,6 +84,9 @@
         view.render();
         return view.$('.sub-view').length.should.eql(2);
       });
+      it("searches through nested sub-view names");
+      it("can pass options to the sub-view");
+      return it("can pass a new template for the view");
     });
   });
 
