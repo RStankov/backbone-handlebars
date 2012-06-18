@@ -18,3 +18,4 @@ Backbone.View::renderTemplate = (context = {}) ->
   _.each @_toRender, (view) =>
     view.render()
     @$("#_#{view.cid}").replaceWith view.el
+  delete @_toRender
