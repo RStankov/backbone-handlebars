@@ -1,43 +1,60 @@
-Handlebars.registerHelper 'view', (name, options) ->
-  viewClass = findViewClass(name)
-  view = new viewClass options.hash
+BH =
+  postponed: {}
+  rendered: {}
 
+  postponeRender: (parentView, subView) ->
+    cid = parentView.cid
+
+    @postponed[cid] ?= []
+    @postponed[cid].push subView
+
+  renderPostponed: (parentView) ->
+    cid = parentView.cid
+
+    @rendered[cid] = _.map @postponed[parentView.cid], (view) ->
+      view.render()
+      parentView.$("#_#{view.cid}").replaceWith view.el
+      view
+
+    delete @postponed[cid]
+
+  clearRendered: (parentView) ->
+    cid = parentView.cid
+
+    if @rendered[cid]
+      _.invoke @rendered[cid], 'remove'
+      delete @rendered[cid]
+
+Handlebars.registerHelper 'view', (name, options) ->
+  viewClass = _.inject (name || '').split('.'), ((memo, fragment) -> memo[fragment] || false), window
+  throw "Invalid view name - #{name}" unless viewClass
+
+  view = new viewClass options.hash
   view.template = options.fn if options.fn?
 
-  parentView = options.data.view
-  parentView._toRender ?= []
-  parentView._toRender.push view
+  BH.postponeRender options.data.view, view
 
   new Handlebars.SafeString '<div id="_' + view.cid + '"></div>'
 
-findViewClass = (name) ->
-  viewClass = _.inject (name || '').split('.'), ((memo, fragment) -> memo[fragment] || false), window
-  throw "Invalid view name - #{name}" unless viewClass
-  viewClass
+_compile = Handlebars.compile
+Handlebars.compile = (template, options = {}) ->
+  options.data = true
+  _compile.call this, template, options
 
 Backbone.View::renderTemplate = (context = {}) ->
-  _.invoke @renderedChildren, 'remove' if @renderedChildren
+  BH.clearRendered this
 
   @$el.html @template context, data: {view: this}
 
-  @renderedChildren = _.map @_toRender, (view) =>
+  BH.renderPostponed this
 
-    view.render()
-    @$("#_#{view.cid}").replaceWith view.el
-    view
+Backbone.View::renderedSubViews = ->
+  BH.rendered[@cid]
 
-  delete @_toRender
+_remove = Backbone.View::remove
+Backbone.View::remove = ->
+  BH.clearRendered this
+  _remove.apply this, arguments
 
-monkeyPatch = (object, methodName, createNewMethod) ->
-  object[methodName] = createNewMethod(object[methodName])
-
-monkeyPatch Backbone.View.prototype, 'remove', (original) ->
-  ->
-    _.invoke @renderedChildren, 'remove' if @renderedChildren
-    original.apply this, arguments
-
-monkeyPatch Handlebars, 'compile', (original) ->
-  (template, options = {}) ->
-    options.data = true
-    original.call this, template, options
+Backbone.Handlebars = BH
 

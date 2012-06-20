@@ -31,7 +31,14 @@
   };
 
   describe("Backbone.Handlebars", function() {
-    var renderView;
+    var renderView, _view;
+    _view = null;
+    afterEach(function() {
+      if (_view) {
+        _view.remove();
+      }
+      return _view = null;
+    });
     renderView = function(template, context) {
       var customViewClass;
       if (context == null) {
@@ -43,7 +50,7 @@
           return this.renderTemplate(context);
         }
       });
-      return new customViewClass;
+      return _view = new customViewClass;
     };
     describe("View#renderTemplate", function() {
       it("renders the template of the view", function() {
@@ -100,7 +107,7 @@
         var removeCounter, subView, view, _i, _len, _ref;
         view = renderView('{{view "test.views.SubView"}}{{view "test.views.SubView"}}');
         removeCounter = 0;
-        _ref = view.renderedChildren;
+        _ref = view.renderedSubViews();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           subView = _ref[_i];
           subView.remove = function() {
@@ -114,7 +121,7 @@
         var removeCounter, subView, view, _i, _len, _ref;
         view = renderView('{{view "test.views.SubView"}}{{view "test.views.SubView"}}');
         removeCounter = 0;
-        _ref = view.renderedChildren;
+        _ref = view.renderedSubViews();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           subView = _ref[_i];
           subView.remove = function() {

@@ -20,12 +20,18 @@ window.test =
         @$el.html @model
 
 describe "Backbone.Handlebars", ->
+  _view = null
+
+  afterEach ->
+    _view.remove() if _view
+    _view = null
+
   renderView = (template, context = {}) ->
     customViewClass = Backbone.View.extend
       template: Handlebars.compile template
       initialize: -> @renderTemplate(context)
 
-    new customViewClass
+    _view = new customViewClass
 
   describe "View#renderTemplate", ->
     it "renders the template of the view", ->
@@ -70,7 +76,7 @@ describe "Backbone.Handlebars", ->
       view = renderView '{{view "test.views.SubView"}}{{view "test.views.SubView"}}'
 
       removeCounter = 0
-      for subView in view.renderedChildren
+      for subView in view.renderedSubViews()
         subView.remove = ->
           removeCounter += 1
 
@@ -82,7 +88,7 @@ describe "Backbone.Handlebars", ->
       view = renderView '{{view "test.views.SubView"}}{{view "test.views.SubView"}}'
 
       removeCounter = 0
-      for subView in view.renderedChildren
+      for subView in view.renderedSubViews()
         subView.remove = ->
           removeCounter += 1
 
