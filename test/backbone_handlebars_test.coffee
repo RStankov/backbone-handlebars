@@ -1,22 +1,23 @@
-class window.SubView extends Backbone.View
-  className: 'sub-view'
-  events:
-    click: -> @$el.html 'clicked'
-
-class window.SubViewExpectingTemplate extends Backbone.View
-  className: 'sub-view'
-  template: Handlebars.compile 'text'
-  render: ->
-    @$el.html @template({})
-
-
-class window.SubViewWithModel extends Backbone.View
-  render: -> @$el.html @model
-
-window.app =
+window.test =
   views:
     SubView: Backbone.View.extend
-      render: -> @$el.html 'sub-view'
+      className: 'sub-view'
+
+    SubViewWithEvents: Backbone.View.extend
+      className: 'sub-view'
+      events:
+        click: -> @$el.html 'clicked'
+
+    SubViewExpectingTemplate: Backbone.View.extend
+      className: 'sub-view'
+      template: Handlebars.compile 'text'
+      render: ->
+        @$el.html @template({})
+
+    SubViewWithModel: Backbone.View.extend
+      className: 'sub-view'
+      render: ->
+        @$el.html @model
 
 describe "Backbone.Handlebars", ->
   describe "view helper", ->
@@ -27,35 +28,32 @@ describe "Backbone.Handlebars", ->
 
       new customViewClass
 
-    it "adds the sub-view element", ->
-      view = renderView '{{view "SubView"}}'
+    it "renders sub-view element", ->
+      view = renderView '{{view "test.views.SubView"}}'
       view.$('.sub-view').should.not.be.null
 
     it "keeps the events of the sub-view", ->
-      view = renderView '{{view "SubView"}}'
-      view.$('.sub-view').click()
-      view.$('.sub-view').html().should.eql 'clicked'
+      view = renderView '{{view "test.views.SubViewWithEvents"}}'
+
+      subViewEl = view.$('.sub-view')
+      subViewEl.click()
+      subViewEl.html().should.eql 'clicked'
 
     it "can render several sub-views", ->
-      view = renderView '{{view "SubView"}}{{view "SubView"}}'
-      view.render()
+      view = renderView '{{view "test.views.SubView"}}{{view "test.views.SubView"}}'
       view.$('.sub-view').length.should.eql 2
 
     it "throws an error if sub-view doesn't exists", ->
       (-> renderView '{{view "InvalidView"}}').should.throw 'Invalid view name - InvalidView'
 
-    it "searches through nested sub-view names", ->
-      view = renderView '{{view "app.views.SubView"}}'
-      view.$el.html().should.eql '<div>sub-view</div>'
-
     it "can pass options to the sub-view", ->
-      view = renderView '{{view "SubViewWithModel" model=1 tagName="span" className="sview"}}'
+      view = renderView '{{view "test.views.SubViewWithModel" model=1 tagName="span" className="sview"}}'
 
-      subView = view.$('.sview')
-      subView.html().should.eql '1'
-      subView.prop('tagName').toLowerCase().should.eql 'span'
+      subViewEl = view.$('.sview')
+      subViewEl.html().should.eql '1'
+      subViewEl.prop('tagName').toLowerCase().should.eql 'span'
 
     it "can pass a new template for the view", ->
-      view = renderView '{{#view "SubViewExpectingTemplate"}}custom template{{/view}} '
+      view = renderView '{{#view "test.views.SubViewExpectingTemplate"}}custom template{{/view}} '
       view.$('.sub-view').html().should.eql 'custom template'
 
