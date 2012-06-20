@@ -31,20 +31,39 @@
   };
 
   describe("Backbone.Handlebars", function() {
-    return describe("{{view}} helper used with this.renderTemplate", function() {
-      var renderView;
-      renderView = function(template) {
-        var customViewClass;
-        customViewClass = Backbone.View.extend({
-          template: Handlebars.compile(template, {
-            data: true
-          }),
-          initialize: function() {
-            return this.renderTemplate();
-          }
+    var renderView;
+    renderView = function(template, context) {
+      var customViewClass;
+      if (context == null) {
+        context = {};
+      }
+      customViewClass = Backbone.View.extend({
+        template: Handlebars.compile(template, {
+          data: true
+        }),
+        initialize: function() {
+          return this.renderTemplate(context);
+        }
+      });
+      return new customViewClass;
+    };
+    describe("View#renderTemplate", function() {
+      it("renders the template of the view", function() {
+        var view;
+        view = renderView('template text');
+        return view.$el.html().should.eql('template text');
+      });
+      return it("accepts template context as argument", function() {
+        var view;
+        view = renderView('{{a}} + {{b}} = {{c}}', {
+          a: 1,
+          b: 2,
+          c: 3
         });
-        return new customViewClass;
-      };
+        return view.$el.html().should.eql('1 + 2 = 3');
+      });
+    });
+    return describe("View#renderTemplate with {{view}} helper", function() {
       it("renders sub-view element", function() {
         var view;
         view = renderView('{{view "test.views.SubView"}}');

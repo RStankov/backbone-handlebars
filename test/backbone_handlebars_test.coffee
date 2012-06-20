@@ -20,14 +20,23 @@ window.test =
         @$el.html @model
 
 describe "Backbone.Handlebars", ->
-  describe "{{view}} helper used with this.renderTemplate", ->
-    renderView = (template) ->
-      customViewClass = Backbone.View.extend
-        template: Handlebars.compile(template, data: true)
-        initialize: -> @renderTemplate()
+  renderView = (template, context = {}) ->
+    customViewClass = Backbone.View.extend
+      template: Handlebars.compile(template, data: true)
+      initialize: -> @renderTemplate(context)
 
-      new customViewClass
+    new customViewClass
 
+  describe "View#renderTemplate", ->
+    it "renders the template of the view", ->
+      view = renderView 'template text'
+      view.$el.html().should.eql 'template text'
+
+    it "accepts template context as argument", ->
+      view = renderView '{{a}} + {{b}} = {{c}}', a: 1, b: 2, c: 3
+      view.$el.html().should.eql '1 + 2 = 3'
+
+  describe "View#renderTemplate with {{view}} helper", ->
     it "renders sub-view element", ->
       view = renderView '{{view "test.views.SubView"}}'
       view.$('.sub-view').should.not.be.null
