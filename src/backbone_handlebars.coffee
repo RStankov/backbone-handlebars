@@ -21,6 +21,7 @@ Backbone.View::renderTemplate = (context = {}) ->
   @$el.html @template context, data: {view: this}
 
   @renderedChildren = _.map @_toRender, (view) =>
+
     view.render()
     @$("#_#{view.cid}").replaceWith view.el
     view
@@ -31,4 +32,9 @@ _remove = Backbone.View::remove
 Backbone.View::remove = ->
   _.invoke @renderedChildren, 'remove' if @renderedChildren
   _remove.apply this, arguments
+
+_compile = Handlebars.compile
+Handlebars.compile = (template, options = {})->
+  options.data = true
+  _compile.call(this, template, options)
 

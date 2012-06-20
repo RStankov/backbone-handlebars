@@ -22,7 +22,7 @@ window.test =
 describe "Backbone.Handlebars", ->
   renderView = (template, context = {}) ->
     customViewClass = Backbone.View.extend
-      template: Handlebars.compile(template, data: true)
+      template: Handlebars.compile template
       initialize: -> @renderTemplate(context)
 
     new customViewClass

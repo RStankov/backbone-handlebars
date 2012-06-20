@@ -38,9 +38,7 @@
         context = {};
       }
       customViewClass = Backbone.View.extend({
-        template: Handlebars.compile(template, {
-          data: true
-        }),
+        template: Handlebars.compile(template),
         initialize: function() {
           return this.renderTemplate(context);
         }
