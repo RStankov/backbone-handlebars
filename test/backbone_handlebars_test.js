@@ -31,7 +31,7 @@
   };
 
   describe("Backbone.Handlebars", function() {
-    return describe("view helper", function() {
+    return describe("{{view}} helper used with this.renderTemplate", function() {
       var renderView;
       renderView = function(template) {
         var customViewClass;

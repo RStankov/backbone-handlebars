@@ -20,7 +20,7 @@ window.test =
         @$el.html @model
 
 describe "Backbone.Handlebars", ->
-  describe "view helper", ->
+  describe "{{view}} helper used with this.renderTemplate", ->
     renderView = (template) ->
       customViewClass = Backbone.View.extend
         template: Handlebars.compile(template, data: true)
