@@ -28,13 +28,16 @@ Backbone.View::renderTemplate = (context = {}) ->
 
   delete @_toRender
 
-_remove = Backbone.View::remove
-Backbone.View::remove = ->
-  _.invoke @renderedChildren, 'remove' if @renderedChildren
-  _remove.apply this, arguments
+monkeyPatch = (object, methodName, createNewMethod) ->
+  object[methodName] = createNewMethod(object[methodName])
 
-_compile = Handlebars.compile
-Handlebars.compile = (template, options = {})->
-  options.data = true
-  _compile.call(this, template, options)
+monkeyPatch Backbone.View.prototype, 'remove', (original) ->
+  ->
+    _.invoke @renderedChildren, 'remove' if @renderedChildren
+    original.apply this, arguments
+
+monkeyPatch Handlebars, 'compile', (original) ->
+  (template, options = {}) ->
+    options.data = true
+    original.call this, template, options
 
