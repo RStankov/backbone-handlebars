@@ -16,10 +16,19 @@ findViewClass = (name) ->
   viewClass
 
 Backbone.View::renderTemplate = (context = {}) ->
+  _.invoke @renderedChildren, 'remove' if @renderedChildren
+
   @$el.html @template context, data: {view: this}
 
-  _.each @_toRender, (view) =>
+  @renderedChildren = _.map @_toRender, (view) =>
     view.render()
     @$("#_#{view.cid}").replaceWith view.el
+    view
 
   delete @_toRender
+
+_remove = Backbone.View::remove
+Backbone.View::remove = ->
+  _.invoke @renderedChildren, 'remove' if @renderedChildren
+  _remove.apply this, arguments
+

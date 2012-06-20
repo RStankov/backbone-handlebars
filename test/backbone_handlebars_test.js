@@ -74,10 +74,38 @@
         subViewEl.html().should.eql('1');
         return subViewEl.prop('tagName').toLowerCase().should.eql('span');
       });
-      return it("can pass a new template for the view", function() {
+      it("can pass a new template for the view", function() {
         var view;
         view = renderView('{{#view "test.views.SubViewExpectingTemplate"}}custom template{{/view}} ');
         return view.$('.sub-view').html().should.eql('custom template');
+      });
+      it("removes sub-views via view.remove() on re-render", function() {
+        var removeCounter, subView, view, _i, _len, _ref;
+        view = renderView('{{view "test.views.SubView"}}{{view "test.views.SubView"}}');
+        removeCounter = 0;
+        _ref = view.renderedChildren;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          subView = _ref[_i];
+          subView.remove = function() {
+            return removeCounter += 1;
+          };
+        }
+        view.renderTemplate();
+        return removeCounter.should.eql(2);
+      });
+      return it("removes sub-views via view.remove() on view removal", function() {
+        var removeCounter, subView, view, _i, _len, _ref;
+        view = renderView('{{view "test.views.SubView"}}{{view "test.views.SubView"}}');
+        removeCounter = 0;
+        _ref = view.renderedChildren;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          subView = _ref[_i];
+          subView.remove = function() {
+            return removeCounter += 1;
+          };
+        }
+        view.remove();
+        return removeCounter.should.eql(2);
       });
     });
   });

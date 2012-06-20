@@ -57,3 +57,26 @@ describe "Backbone.Handlebars", ->
       view = renderView '{{#view "test.views.SubViewExpectingTemplate"}}custom template{{/view}} '
       view.$('.sub-view').html().should.eql 'custom template'
 
+    it "removes sub-views via view.remove() on re-render", ->
+      view = renderView '{{view "test.views.SubView"}}{{view "test.views.SubView"}}'
+
+      removeCounter = 0
+      for subView in view.renderedChildren
+        subView.remove = ->
+          removeCounter += 1
+
+      view.renderTemplate()
+
+      removeCounter.should.eql 2
+
+    it "removes sub-views via view.remove() on view removal", ->
+      view = renderView '{{view "test.views.SubView"}}{{view "test.views.SubView"}}'
+
+      removeCounter = 0
+      for subView in view.renderedChildren
+        subView.remove = ->
+          removeCounter += 1
+
+      view.remove()
+
+      removeCounter.should.eql 2
