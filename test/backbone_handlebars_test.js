@@ -25,6 +25,28 @@
 
   })(Backbone.View);
 
+  window.SubViewExpectingTemplate = (function(_super) {
+
+    __extends(SubViewExpectingTemplate, _super);
+
+    SubViewExpectingTemplate.name = 'SubViewExpectingTemplate';
+
+    function SubViewExpectingTemplate() {
+      return SubViewExpectingTemplate.__super__.constructor.apply(this, arguments);
+    }
+
+    SubViewExpectingTemplate.prototype.className = 'sub-view';
+
+    SubViewExpectingTemplate.prototype.template = Handlebars.compile('text');
+
+    SubViewExpectingTemplate.prototype.render = function() {
+      return this.$el.html(this.template({}));
+    };
+
+    return SubViewExpectingTemplate;
+
+  })(Backbone.View);
+
   window.SubViewWithModel = (function(_super) {
 
     __extends(SubViewWithModel, _super);
@@ -102,7 +124,11 @@
         subView.html().should.eql('1');
         return subView.prop('tagName').toLowerCase().should.eql('span');
       });
-      return it("can pass a new template for the view");
+      return it("can pass a new template for the view", function() {
+        var view;
+        view = renderView('{{#view "SubViewExpectingTemplate"}}custom template{{/view}} ');
+        return view.$('.sub-view').html().should.eql('custom template');
+      });
     });
   });
 

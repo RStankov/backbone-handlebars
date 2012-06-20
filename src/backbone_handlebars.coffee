@@ -2,6 +2,8 @@ Handlebars.registerHelper 'view', (name, options) ->
   viewClass = findViewClass(name)
   view = new viewClass options.hash
 
+  view.template = options.fn if options.fn?
+
   parentView = options.data.view
   parentView._toRender ?= []
   parentView._toRender.push view
@@ -15,7 +17,9 @@ findViewClass = (name) ->
 
 Backbone.View::renderTemplate = (context = {}) ->
   @$el.html @template context, data: {view: this}
+
   _.each @_toRender, (view) =>
     view.render()
     @$("#_#{view.cid}").replaceWith view.el
+
   delete @_toRender

@@ -3,6 +3,13 @@ class window.SubView extends Backbone.View
   events:
     click: -> @$el.html 'clicked'
 
+class window.SubViewExpectingTemplate extends Backbone.View
+  className: 'sub-view'
+  template: Handlebars.compile 'text'
+  render: ->
+    @$el.html @template({})
+
+
 class window.SubViewWithModel extends Backbone.View
   render: -> @$el.html @model
 
@@ -48,5 +55,7 @@ describe "Backbone.Handlebars", ->
       subView.html().should.eql '1'
       subView.prop('tagName').toLowerCase().should.eql 'span'
 
-    it "can pass a new template for the view"
+    it "can pass a new template for the view", ->
+      view = renderView '{{#view "SubViewExpectingTemplate"}}custom template{{/view}} '
+      view.$('.sub-view').html().should.eql 'custom template'
 
