@@ -43,10 +43,9 @@ Handlebars.compile = (template, options = {}) ->
 
 Backbone.View::renderTemplate = (context = {}) ->
   BH.clearRendered this
-
   @$el.html @template context, data: {view: this}
-
   BH.renderPostponed this
+  this
 
 Backbone.View::renderedSubViews = ->
   BH.rendered[@cid]

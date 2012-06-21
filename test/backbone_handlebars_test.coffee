@@ -26,7 +26,7 @@ describe "Backbone.Handlebars", ->
     _view.remove() if _view
     _view = null
 
-  renderView = (template, context = {}) ->
+  renderView = (template = '', context = {}) ->
     customViewClass = Backbone.View.extend
       template: Handlebars.compile template
       initialize: -> @renderTemplate(context)
@@ -41,6 +41,10 @@ describe "Backbone.Handlebars", ->
     it "accepts template context as argument", ->
       view = renderView '{{a}} + {{b}} = {{c}}', a: 1, b: 2, c: 3
       view.$el.html().should.eql '1 + 2 = 3'
+
+    it "returns the view", ->
+      view = renderView()
+      view.renderTemplate().should.eql view
 
   describe "View#renderTemplate with {{view}} helper", ->
     it "renders sub-view element", ->

@@ -41,6 +41,9 @@
     });
     renderView = function(template, context) {
       var customViewClass;
+      if (template == null) {
+        template = '';
+      }
       if (context == null) {
         context = {};
       }
@@ -58,7 +61,7 @@
         view = renderView('template text');
         return view.$el.html().should.eql('template text');
       });
-      return it("accepts template context as argument", function() {
+      it("accepts template context as argument", function() {
         var view;
         view = renderView('{{a}} + {{b}} = {{c}}', {
           a: 1,
@@ -66,6 +69,11 @@
           c: 3
         });
         return view.$el.html().should.eql('1 + 2 = 3');
+      });
+      return it("returns the view", function() {
+        var view;
+        view = renderView();
+        return view.renderTemplate().should.eql(view);
       });
     });
     return describe("View#renderTemplate with {{view}} helper", function() {
