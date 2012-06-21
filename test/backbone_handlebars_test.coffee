@@ -12,7 +12,7 @@ window.test =
       className: 'sub-view'
       template: Handlebars.compile 'text'
       render: ->
-        @$el.html @template({})
+        @$el.html @template(@model)
 
     SubViewWithModel: Backbone.View.extend
       className: 'sub-view'
@@ -99,3 +99,19 @@ describe "Backbone.Handlebars", ->
       view.remove()
 
       removeCounter.should.eql 2
+
+  describe "View#renderTemplate with {{views}} helper", ->
+    it "renders a collection of views by given collection of models", ->
+      view = renderView '{{views "test.views.SubView" collection}}', collection: [1..4]
+      view.$('.sub-view').length.should.eql 4
+
+    it "can pass a new template for the view", ->
+      view = renderView '[{{#views "test.views.SubViewExpectingTemplate" collection}}{{this}}{{/views}}]', collection: [1..4]
+      view.$el.text().should.eql '[1234]'
+
+    it "can pass options to the sub-view", ->
+      view = renderView '{{views "test.views.SubViewWithModel" collection className="inner-view"}}', collection: [1..4]
+      view.$('.inner-view').length.should.eql 4
+
+
+

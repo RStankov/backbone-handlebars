@@ -2,11 +2,19 @@ BH =
   postponed: {}
   rendered: {}
 
-  postponeRender: (parentView, subView) ->
-    cid = parentView.cid
+  postponeRender: (name, options) ->
+    viewClass = _.inject (name || '').split('.'), ((memo, fragment) -> memo[fragment] || false), window
+    throw "Invalid view name - #{name}" unless viewClass
+
+    view = new viewClass options.hash
+    view.template = options.fn if options.fn?
+
+    cid = options.data.view.cid
 
     @postponed[cid] ?= []
-    @postponed[cid].push subView
+    @postponed[cid].push view
+
+    '<div id="_' + view.cid + '"></div>'
 
   renderPostponed: (parentView) ->
     cid = parentView.cid
@@ -26,15 +34,14 @@ BH =
       delete @rendered[cid]
 
 Handlebars.registerHelper 'view', (name, options) ->
-  viewClass = _.inject (name || '').split('.'), ((memo, fragment) -> memo[fragment] || false), window
-  throw "Invalid view name - #{name}" unless viewClass
+  new Handlebars.SafeString BH.postponeRender(name, options)
 
-  view = new viewClass options.hash
-  view.template = options.fn if options.fn?
+Handlebars.registerHelper 'views', (name, models, options) ->
+  markers = for model in models
+    options.hash.model = model
+    BH.postponeRender name, options
 
-  BH.postponeRender options.data.view, view
-
-  new Handlebars.SafeString '<div id="_' + view.cid + '"></div>'
+  new Handlebars.SafeString markers.join('')
 
 _compile = Handlebars.compile
 Handlebars.compile = (template, options = {}) ->

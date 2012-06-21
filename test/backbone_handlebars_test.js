@@ -18,7 +18,7 @@
         className: 'sub-view',
         template: Handlebars.compile('text'),
         render: function() {
-          return this.$el.html(this.template({}));
+          return this.$el.html(this.template(this.model));
         }
       }),
       SubViewWithModel: Backbone.View.extend({
@@ -76,7 +76,7 @@
         return view.renderTemplate().should.eql(view);
       });
     });
-    return describe("View#renderTemplate with {{view}} helper", function() {
+    describe("View#renderTemplate with {{view}} helper", function() {
       it("renders sub-view element", function() {
         var view;
         view = renderView('{{view "test.views.SubView"}}');
@@ -138,6 +138,29 @@
         }
         view.remove();
         return removeCounter.should.eql(2);
+      });
+    });
+    return describe("View#renderTemplate with {{views}} helper", function() {
+      it("renders a collection of views by given collection of models", function() {
+        var view;
+        view = renderView('{{views "test.views.SubView" collection}}', {
+          collection: [1, 2, 3, 4]
+        });
+        return view.$('.sub-view').length.should.eql(4);
+      });
+      it("can pass a new template for the view", function() {
+        var view;
+        view = renderView('[{{#views "test.views.SubViewExpectingTemplate" collection}}{{this}}{{/views}}]', {
+          collection: [1, 2, 3, 4]
+        });
+        return view.$el.text().should.eql('[1234]');
+      });
+      return it("can pass options to the sub-view", function() {
+        var view;
+        view = renderView('{{views "test.views.SubViewWithModel" collection className="inner-view"}}', {
+          collection: [1, 2, 3, 4]
+        });
+        return view.$('.inner-view').length.should.eql(4);
       });
     });
   });
