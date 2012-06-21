@@ -1,4 +1,6 @@
 BH =
+  VERSION: '1.0.0'
+
   postponed: {}
   rendered: {}
 
