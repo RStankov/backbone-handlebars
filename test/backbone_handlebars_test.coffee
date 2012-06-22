@@ -19,6 +19,10 @@ window.test =
       render: ->
         @$el.html @model
 
+    SubViewWithModelNames: Backbone.View.extend
+      render: ->
+        @$el.html @model.get('name')
+
 describe "Backbone.Handlebars", ->
   _view = null
 
@@ -101,7 +105,7 @@ describe "Backbone.Handlebars", ->
       removeCounter.should.eql 2
 
   describe "View#renderTemplate with {{views}} helper", ->
-    it "renders a collection of views by given collection of models", ->
+    it "renders an array of views by given collection of models", ->
       view = renderView '{{views "test.views.SubView" collection}}', collection: [1..4]
       view.$('.sub-view').length.should.eql 4
 
@@ -113,5 +117,19 @@ describe "Backbone.Handlebars", ->
       view = renderView '{{views "test.views.SubViewWithModel" collection className="inner-view"}}', collection: [1..4]
       view.$('.inner-view').length.should.eql 4
 
+    it "can render Backbone.Collection instances", ->
+      collection = new Backbone.Collection
+      collection.add name: '1'
+      collection.add name: '2'
 
+      view = renderView '[{{views "test.views.SubViewWithModelNames" collection}}]', {collection}
+      view.$el.text().should.eql '[12]'
+
+    it "can render any object which implements map", ->
+      object =
+        values: [1,2]
+        map: (callback) -> _.map @values, callback
+
+      view = renderView '[{{views "test.views.SubViewWithModel" collection}}]', collection: object
+      view.$el.text().should.eql '[12]'
 

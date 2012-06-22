@@ -26,6 +26,11 @@
         render: function() {
           return this.$el.html(this.model);
         }
+      }),
+      SubViewWithModelNames: Backbone.View.extend({
+        render: function() {
+          return this.$el.html(this.model.get('name'));
+        }
       })
     }
   };
@@ -141,7 +146,7 @@
       });
     });
     return describe("View#renderTemplate with {{views}} helper", function() {
-      it("renders a collection of views by given collection of models", function() {
+      it("renders an array of views by given collection of models", function() {
         var view;
         view = renderView('{{views "test.views.SubView" collection}}', {
           collection: [1, 2, 3, 4]
@@ -155,12 +160,39 @@
         });
         return view.$el.text().should.eql('[1234]');
       });
-      return it("can pass options to the sub-view", function() {
+      it("can pass options to the sub-view", function() {
         var view;
         view = renderView('{{views "test.views.SubViewWithModel" collection className="inner-view"}}', {
           collection: [1, 2, 3, 4]
         });
         return view.$('.inner-view').length.should.eql(4);
+      });
+      it("can render Backbone.Collection instances", function() {
+        var collection, view;
+        collection = new Backbone.Collection;
+        collection.add({
+          name: '1'
+        });
+        collection.add({
+          name: '2'
+        });
+        view = renderView('[{{views "test.views.SubViewWithModelNames" collection}}]', {
+          collection: collection
+        });
+        return view.$el.text().should.eql('[12]');
+      });
+      return it("can render any object which implements map", function() {
+        var object, view;
+        object = {
+          values: [1, 2],
+          map: function(callback) {
+            return _.map(this.values, callback);
+          }
+        };
+        view = renderView('[{{views "test.views.SubViewWithModel" collection}}]', {
+          collection: object
+        });
+        return view.$el.text().should.eql('[12]');
       });
     });
   });

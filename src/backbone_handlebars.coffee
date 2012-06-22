@@ -47,9 +47,14 @@ Handlebars.registerHelper 'view', (name, options) ->
   new Handlebars.SafeString BH.postponeRender(name, options)
 
 Handlebars.registerHelper 'views', (name, models, options) ->
-  markers = for model in models
+  callback = (model) ->
     options.hash.model = model
     BH.postponeRender name, options
+
+  markers = if 'map' of models
+    models.map callback
+  else
+    _.map callback
 
   new Handlebars.SafeString markers.join('')
 
