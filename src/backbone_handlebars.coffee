@@ -1,3 +1,11 @@
+###
+ Backbone Handlebars
+
+ Author: Radoslav Stankov
+ Project site: https://github.com/RStankov/backbone-handlebars
+ Licensed under the MIT License.
+###
+
 BH =
   VERSION: '1.0.0'
 
