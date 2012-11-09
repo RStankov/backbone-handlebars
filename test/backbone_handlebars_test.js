@@ -60,6 +60,54 @@
       });
       return _view = new customViewClass;
     };
+    describe("View#render", function() {
+      it("doesn't render anything if there isn't a template", function() {
+        var view;
+        view = new Backbone.View;
+        view.render();
+        return view.$el.html().should.eql('');
+      });
+      it("renders view template by default", function() {
+        var view, viewClass;
+        viewClass = Backbone.View.extend({
+          template: Handlebars.compile('template text')
+        });
+        view = new viewClass;
+        view.render();
+        return view.$el.html().should.eql('template text');
+      });
+      it("takes the context from templateData method", function() {
+        var view, viewClass;
+        viewClass = Backbone.View.extend({
+          template: Handlebars.compile('Hi {{name}}'),
+          templateData: function() {
+            return {
+              name: 'there'
+            };
+          }
+        });
+        view = new viewClass;
+        view.render();
+        return view.$el.html().should.eql('Hi there');
+      });
+      it("can use templateData directly if is not a method", function() {
+        var view, viewClass;
+        viewClass = Backbone.View.extend({
+          template: Handlebars.compile('Hi {{name}}'),
+          templateData: {
+            name: 'there'
+          }
+        });
+        view = new viewClass;
+        view.render();
+        return view.$el.html().should.eql('Hi there');
+      });
+      return it("returns reference to the view", function() {
+        var view;
+        view = new Backbone.View;
+        return view.render().should.eql(view);
+      });
+    });
     describe("View#renderTemplate", function() {
       it("renders the template of the view", function() {
         var view;

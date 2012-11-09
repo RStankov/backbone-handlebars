@@ -1,6 +1,9 @@
 Backbone.Handlebars
 -------------------
 
+* Added default render method *Radoslav Stankov*
+* Added ```templateData``` property responsible for passing data to the render method *Radoslav Stankov*
+
 Version 1.0.0 (unreleased)
 
 * ```{{views}}``` can render Backbone.Collections (or any object having a map method) *Radoslav Stankov*

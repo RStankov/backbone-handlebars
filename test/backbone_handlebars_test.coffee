@@ -37,6 +37,42 @@ describe "Backbone.Handlebars", ->
 
     _view = new customViewClass
 
+  describe "View#render", ->
+    it "doesn't render anything if there isn't a template", ->
+      view = new Backbone.View
+      view.render()
+      view.$el.html().should.eql ''
+
+    it "renders view template by default", ->
+      viewClass = Backbone.View.extend
+        template: Handlebars.compile 'template text'
+
+      view = new viewClass
+      view.render()
+      view.$el.html().should.eql 'template text'
+
+    it "takes the context from templateData method", ->
+      viewClass = Backbone.View.extend
+        template: Handlebars.compile 'Hi {{name}}'
+        templateData: -> name: 'there'
+
+      view = new viewClass
+      view.render()
+      view.$el.html().should.eql 'Hi there'
+
+    it "can use templateData directly if is not a method", ->
+      viewClass = Backbone.View.extend
+        template: Handlebars.compile 'Hi {{name}}'
+        templateData: {name: 'there'}
+
+      view = new viewClass
+      view.render()
+      view.$el.html().should.eql 'Hi there'
+
+    it "returns reference to the view", ->
+      view = new Backbone.View
+      view.render().should.eql view
+
   describe "View#renderTemplate", ->
     it "renders the template of the view", ->
       view = renderView 'template text'

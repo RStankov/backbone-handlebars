@@ -28,6 +28,36 @@ This will just render:
 </div>
 ```
 
+Or you can just use the new ```render``` method:
+
+```javascript
+var PostView = Backbone.View.extend({
+  template: Handlebars.compile('<h1>{{title}}</h1><p>{{text}}</p>'),
+  templateData: function() {
+    return model;
+  }
+});
+
+view = new PostView({model: {title: 'Title', text: 'Text'}});
+$('body').append(view.render().el);
+```
+
+The method ```templateData``` provides data that will be passed to the template for rendering.
+
+You can also pass templateData directly as an object:
+
+```javascript
+var PostView = Backbone.View.extend({
+  template: Handlebars.compile('<h1>{{title}}</h1><p>{{text}}</p>'),
+  templateData: {
+    title: 'Title',
+    text: 'Text'
+  }
+});
+
+$('body').append(new PostView.render().el);
+```
+
 #### {{view}} helper
 
 The real deal about using ```renderTemplate``` is that you can declare and render sub-views in your templates:

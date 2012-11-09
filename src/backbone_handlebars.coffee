@@ -77,5 +77,12 @@ Backbone.View::remove = ->
   BH.clearRendered this
   _remove.apply this, arguments
 
+Backbone.View::render = ->
+  if @template
+    @renderTemplate if typeof @templateData is 'function' then @templateData() else @templateData
+  this
+
+Backbone.View::templateData = -> {}
+
 Backbone.Handlebars = BH
 
