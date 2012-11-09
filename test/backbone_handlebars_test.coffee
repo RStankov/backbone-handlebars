@@ -32,7 +32,7 @@ describe "Backbone.Handlebars", ->
 
   renderView = (template = '', context = {}) ->
     customViewClass = Backbone.View.extend
-      template: Handlebars.compile template
+      template: if typeof template is 'function' then template else Handlebars.compile(template)
       initialize: -> @renderTemplate(context)
 
     _view = new customViewClass
@@ -91,6 +91,10 @@ describe "Backbone.Handlebars", ->
       view = renderView '{{view "test.views.SubView"}}'
       view.$('.sub-view').should.not.be.null
 
+    it "works with precompiled templates", ->
+      view = renderView Handlebars.compile '{{view  "test.views.SubView"}}'
+      view.$('.sub-view').should.not.be.null
+
     it "keeps the events of the sub-view", ->
       view = renderView '{{view "test.views.SubViewWithEvents"}}'
 
@@ -145,6 +149,10 @@ describe "Backbone.Handlebars", ->
       view = renderView '{{views "test.views.SubView" collection}}', collection: [1..4]
       view.$('.sub-view').length.should.eql 4
 
+    it "works with precompiled templates", ->
+      view = renderView Handlebars.compile('{{views "test.views.SubView" collection}}'), collection: [1..4]
+      view.$('.sub-view').length.should.eql 4
+
     it "can pass a new template for the view", ->
       view = renderView '[{{#views "test.views.SubViewExpectingTemplate" collection}}{{this}}{{/views}}]', collection: [1..4]
       view.$el.text().should.eql '[1234]'
@@ -168,4 +176,3 @@ describe "Backbone.Handlebars", ->
 
       view = renderView '[{{views "test.views.SubViewWithModel" collection}}]', collection: object
       view.$el.text().should.eql '[12]'
-

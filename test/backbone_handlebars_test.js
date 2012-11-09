@@ -53,7 +53,7 @@
         context = {};
       }
       customViewClass = Backbone.View.extend({
-        template: Handlebars.compile(template),
+        template: typeof template === 'function' ? template : Handlebars.compile(template),
         initialize: function() {
           return this.renderTemplate(context);
         }
@@ -135,6 +135,11 @@
         view = renderView('{{view "test.views.SubView"}}');
         return view.$('.sub-view').should.not.be["null"];
       });
+      it("works with precompiled templates", function() {
+        var view;
+        view = renderView(Handlebars.compile('{{view  "test.views.SubView"}}'));
+        return view.$('.sub-view').should.not.be["null"];
+      });
       it("keeps the events of the sub-view", function() {
         var subViewEl, view;
         view = renderView('{{view "test.views.SubViewWithEvents"}}');
@@ -197,6 +202,13 @@
       it("renders an array of views by given collection of models", function() {
         var view;
         view = renderView('{{views "test.views.SubView" collection}}', {
+          collection: [1, 2, 3, 4]
+        });
+        return view.$('.sub-view').length.should.eql(4);
+      });
+      it("works with precompiled templates", function() {
+        var view;
+        view = renderView(Handlebars.compile('{{views "test.views.SubView" collection}}'), {
           collection: [1, 2, 3, 4]
         });
         return view.$('.sub-view').length.should.eql(4);

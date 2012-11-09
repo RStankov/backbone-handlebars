@@ -12,14 +12,14 @@ BH =
   postponed: {}
   rendered: {}
 
-  postponeRender: (name, options) ->
+  postponeRender: (name, options, parentView) ->
     viewClass = _.inject (name || '').split('.'), ((memo, fragment) -> memo[fragment] || false), window
     throw "Invalid view name - #{name}" unless viewClass
 
     view = new viewClass options.hash
     view.template = options.fn if options.fn?
 
-    cid = options.data.view.cid
+    cid = (parentView || options.data.view).cid
 
     @postponed[cid] ?= []
     @postponed[cid].push view
@@ -44,12 +44,12 @@ BH =
       delete @rendered[cid]
 
 Handlebars.registerHelper 'view', (name, options) ->
-  new Handlebars.SafeString BH.postponeRender(name, options)
+  new Handlebars.SafeString BH.postponeRender(name, options, @_parentView)
 
 Handlebars.registerHelper 'views', (name, models, options) ->
-  callback = (model) ->
+  callback = (model) =>
     options.hash.model = model
-    BH.postponeRender name, options
+    BH.postponeRender name, options, @_parentView
 
   markers = if 'map' of models
     models.map callback
@@ -65,6 +65,7 @@ Handlebars.compile = (template, options = {}) ->
 
 Backbone.View::renderTemplate = (context = {}) ->
   BH.clearRendered this
+  context._parentView = this
   @$el.html @template context, data: {view: this}
   BH.renderPostponed this
   this
