@@ -65,6 +65,7 @@ Handlebars.compile = (template, options = {}) ->
 
 Backbone.View::renderTemplate = (context = {}) ->
   BH.clearRendered this
+  context = _.clone context
   context._parentView = this
   @$el.html @template context, data: {view: this}
   BH.renderPostponed this
