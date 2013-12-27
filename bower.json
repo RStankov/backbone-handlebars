@@ -1,0 +1,20 @@
+{
+  "name": "Backbone.Handlebars",
+  "version": "1.0",
+  "homepage": "https://github.com/RStankov/backbone-handlebars",
+  "authors": [
+    "Radoslav Stankov <rstankov@gmail.com>"
+  ],
+  "description": "Mixing Backbone and Handlebars",
+  "main": "lib/backbone_handlebars.js",
+  "keywords": [
+    "backbone",
+    "handlebars",
+    "views",
+    "tags",
+    "mustache",
+    "subviews",
+    "helpers"
+  ],
+  "license": "MIT"
+}
