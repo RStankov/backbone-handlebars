@@ -1,6 +1,6 @@
 {
   "name": "Backbone.Handlebars",
-  "version": "1.0",
+  "version": "1.0.0",
   "homepage": "https://github.com/RStankov/backbone-handlebars",
   "authors": [
     "Radoslav Stankov <rstankov@gmail.com>"
