@@ -212,18 +212,27 @@ view.remove(); // this will also call the SubView#remove method
 
 ### Installing
 
-Just copy ```lib/backone_handlebars.js``` into your project. Or if you are using [CoffeeScript](http://http://coffeescript.org/) you can use directly - ```src/backbone_handlebars.coffee```.
+### Installing
+
+You can get `Backbone.Handlebars` in several ways:
+
+* copy `lib/backbone_handlebars.js` into your project
+* copy `src/backbone_handlebars.coffee` into your project if you are using [CoffeeScript](http://http://coffeescript.org/)
+* via [Bower](http://bower.io/) - `bower install Backbone.Handlebars` from your console
+* adding `Backbone.Handlebars` as your [bower](http://bower.io/) dependency
 
 ### Requirements
 
 ```
 Backbone.js - 0.9.2+
-Handlebars - 1.0.beta.6+
+Handlebars - 1.0+
 ```
 
 ### Running the tests
 
-Just open - ```test/runner.html```
+Install bower developer dependencies - ```bower install```.
+
+Just open - ```test/runner.html```.
 
 ### Contributing
 
