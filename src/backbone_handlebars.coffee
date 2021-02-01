@@ -13,7 +13,7 @@ BH =
   rendered: {}
 
   postponeRender: (name, options, parentView) ->
-    viewClass = _.inject (name || '').split('.'), ((memo, fragment) -> memo[fragment] || false), window
+    viewClass = (name || '').split('.').reduce(((memo, fragment) -> memo[fragment] || false), window)
     throw "Invalid view name - #{name}" unless viewClass
 
     view = new viewClass options.hash
